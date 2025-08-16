@@ -1,0 +1,21 @@
+name: Morning Filings Digest
+on:
+  schedule:
+    # 13:30 UTC ≈ 6:30 PT during DST; shifts to 5:30 PT in winter.
+    - cron: '30 13 * * 1-5'
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run digest
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: |
+          sudo timedatectl set-timezone America/Los_Angeles
+          bash ./script.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: filings-digest
+          path: daily_*.md
